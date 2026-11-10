@@ -425,9 +425,6 @@ public static function wardsForCulture(c:Culture):Array<Class<Ward>> {
 				return;
 			} catch (e:Dynamic) {
 				lastError = e;
-				#if debug
-				throw e;
-				#end
 			}
 		}
 		throw new Error("Town generation failed after 12 attempts: " + (lastError == null ? "unknown error" : Std.string(lastError)));
