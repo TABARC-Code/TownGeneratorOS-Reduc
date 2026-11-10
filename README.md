@@ -44,7 +44,7 @@ The optional full matrix covers every culture and origin at five settlement size
 With the OpenFL and msignal libraries installed, the regression entry point can be run using Haxe:
 
 ```sh
-haxe -D debug -cp Source -cp tests -lib openfl -lib msignal -main Regression --interp
+haxe -D debug -cp Source -cp tests -lib lime -lib openfl -lib msignal -main Regression --interp
 ```
 
 The regression cases cover geometry, noise across negative coordinates, weighted routes, adjacency, waterfront classification, crossing geometry, economic metadata and repeatable settlement seeds. The economy values are relative siting weights; they aren't an economic simulation. Districts without buildings are marked as undeveloped, rather than housing.

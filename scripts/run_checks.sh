@@ -7,9 +7,9 @@ if ! command -v haxe >/dev/null 2>&1; then
     printf '%s\n' 'Haxe is not installed. Python checks passed; Haxe tests were not run.' >&2
     exit 2
 fi
-haxe -D debug -cp Source -cp tests -lib openfl -lib msignal --run Regression
+haxe -D debug -cp Source -cp tests -lib lime -lib openfl -lib msignal --run Regression
 if [ "${1:-}" = "full" ]; then
-    haxe -D debug -cp Source -lib openfl -lib msignal --run com.watabou.towngenerator.tests.RegressionSuite full
+    haxe -D debug -cp Source -lib lime -lib openfl -lib msignal --run com.watabou.towngenerator.tests.RegressionSuite full
 else
-    haxe -D debug -cp Source -lib openfl -lib msignal --run com.watabou.towngenerator.tests.RegressionSuite
+    haxe -D debug -cp Source -lib lime -lib openfl -lib msignal --run com.watabou.towngenerator.tests.RegressionSuite
 fi
