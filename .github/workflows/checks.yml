@@ -1,0 +1,34 @@
+name: Checks
+
+permissions:
+  contents: read
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: krdlab/setup-haxe@v2
+        with:
+          haxe-version: '4.3.7'
+      - name: Install libraries
+        run: |
+          haxelib install lime 7.3.0 --always
+          haxelib install openfl 8.9.0 --always
+          haxelib install msignal 1.2.5 --always
+      - name: Check source and regression cases
+        run: sh scripts/run_checks.sh
+      - name: Build HTML5 application
+        run: haxelib run lime build html5
+      - name: Upload HTML5 build
+        uses: actions/upload-artifact@v4
+        with:
+          name: town-generator-html5
+          path: Export/html5/bin/
+          if-no-files-found: error

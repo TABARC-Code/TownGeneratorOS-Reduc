@@ -4,6 +4,7 @@ import openfl.geom.Point;
 import com.watabou.towngenerator.building.Patch;
 import com.watabou.towngenerator.building.Model;
 import com.watabou.towngenerator.building.CurtainWall;
+import com.watabou.towngenerator.building.Architect;
 
 using com.watabou.utils.ArrayExtender;
 
@@ -22,8 +23,7 @@ class Castle extends Ward {
 	}
 
 	override public function createGeometry() {
-		var block = patch.shape.shrinkEq( Ward.MAIN_STREET * 2 );
-		geometry = Ward.createOrthoBuilding( block, Math.sqrt( block.square ) * 4, 0.6 );
+		geometry = Architect.makeStarFort(patch.shape);
 	}
 
 	override public inline function getLabel() return "Castle";

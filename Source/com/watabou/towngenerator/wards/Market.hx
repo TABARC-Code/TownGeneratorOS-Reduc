@@ -2,54 +2,56 @@ package com.watabou.towngenerator.wards;
 
 import openfl.geom.Point;
 
-import com.watabou.utils.Random;
-import com.watabou.geom.Polygon;
-import com.watabou.geom.GeomUtils;
 
 import com.watabou.towngenerator.building.Patch;
 import com.watabou.towngenerator.building.Model;
+import com.watabou.towngenerator.building.Architect;
 
 class Market extends Ward {
 
 	override public function createGeometry() {
+    var angle:Null<Float> = estimateNearestArteryAngle();
+    geometry = Architect.makeMarket(patch.shape, model.culture, angle);
+}
 
-		// fountain or statue
-		var statue = Random.bool( 0.6 );
-		// we always offset a statue and sometimes a fountain
-		var offset = statue || Random.bool( 0.3 );
+private function estimateNearestArteryAngle():Null<Float> {
+    if (model == null || model.arteries == null || model.arteries.length == 0) return null;
+    var p = patch.shape.centroid;
+    var bestD = Math.POSITIVE_INFINITY;
+    var bestA:Null<Float> = null;
 
-		var v0:Point = null;
-		var v1:Point = null;
-		if (statue || offset) {
-			// we need an edge both for rotating a statue and offsetting
-			var length = -1.0;
-			patch.shape.forEdge( function( p0, p1 ) {
-				var len = Point.distance( p0, p1 );
-				if (len > length) {
-					length = len;
-					v0 = p0;
-					v1 = p1;
-				}
-			} );
-		}
+    for (a in model.arteries) {
+        if (a == null || a.length < 2) continue;
+        for (i in 0...a.length - 1) {
+            var v1 = a[i];
+            var v2 = a[i + 1];
+            var d = distPointSegment(p, v1, v2);
+            if (d < bestD) {
+                bestD = d;
+                bestA = Math.atan2(v2.y - v1.y, v2.x - v1.x);
+            }
+        }
+    }
+    return bestA;
+}
 
-		var object:Polygon;
-		if (statue) {
-			object = Polygon.rect( 1 + Random.float(), 1 + Random.float() );
-			object.rotate( Math.atan2( v1.y - v0.y, v1.x - v0.x ) );
-		} else {
-			object = Polygon.circle( 1 + Random.float() );
-		}
+private static inline function distPointSegment(p:Point, a:Point, b:Point):Float {
+    var abx = b.x - a.x;
+    var aby = b.y - a.y;
+    var apx = p.x - a.x;
+    var apy = p.y - a.y;
+    var ab2 = abx * abx + aby * aby;
+    if (ab2 <= 1e-9) return Point.distance(p, a);
+    var t = (apx * abx + apy * aby) / ab2;
+    if (t < 0) t = 0;
+    else if (t > 1) t = 1;
+    var cx = a.x + abx * t;
+    var cy = a.y + aby * t;
+    var dx = p.x - cx;
+    var dy = p.y - cy;
+    return Math.sqrt(dx * dx + dy * dy);
+}
 
-		if (offset) {
-			var gravity = GeomUtils.interpolate( v0, v1 );
-			object.offset( GeomUtils.interpolate( patch.shape.centroid, gravity, 0.2 + Random.float() * 0.4 ) );
-		} else {
-			object.offset( patch.shape.centroid );
-		}
-
-		geometry = [object];
-	}
 
 	public static function rateLocation( model:Model, patch:Patch ):Float {
 		// One market should not touch another

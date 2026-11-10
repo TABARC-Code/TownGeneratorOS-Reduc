@@ -28,6 +28,6 @@ class Main extends Game {
 	}
 
 	override public function getScale( w:Int, h:Int ):Float {
-		return Std.int( Capabilities.screenDPI / 24 );
+		return Math.max(1, Std.int(Capabilities.screenDPI / 24));
 	}
 }

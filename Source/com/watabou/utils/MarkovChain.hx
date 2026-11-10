@@ -1,10 +1,10 @@
-package com.watabou.mythology;
+package com.watabou.utils;
 
 using com.watabou.utils.ArrayExtender;
 
 class MarkovChain<T> {
 
-	private var table	: Map<T, FollowUp>;
+	private var table	: Map<T, FollowUp<T>>;
 
 	public function new() {
 		table = new Map();
@@ -32,20 +32,23 @@ class MarkovChain<T> {
 		var result:Array<T> = [];
 
 		var state:T = null;
-		while (true) {
-			state = getNext( state );
-			result.push( state );
-			if (isTerminal( state ))
-				break;
+		var remaining = 1000;
+		while (remaining-- > 0) {
+			var next = getNext(state);
+			if (next == null || isTerminal(next)) break;
+			result.push(next);
+			state = next;
 		}
 
 		return result;
 	}
 
-	public function getNext( a:T ):T
-		return table[a].get();
+	public function getNext(a:T):T {
+		var followUp = table.get(a);
+		return followUp == null ? null : followUp.get();
+	}
 
-	public var isTerminal = function( state:T ) { return false; };
+	public var isTerminal = function(state:T) { return state == null; };
 }
 
 private class FollowUp<T> {

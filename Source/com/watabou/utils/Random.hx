@@ -9,8 +9,10 @@ class Random {
 
 	private static var seed = 1;
 
-	public static function reset( seed=-1 )
-		Random.seed = (seed != -1 ? seed : Std.int( Date.now().getTime() % n ));
+	public static function reset( seed=-1 ) {
+		var nextSeed = (seed > 0 ? seed : Std.int(Date.now().getTime() % n));
+		Random.seed = nextSeed > 0 && nextSeed < n ? nextSeed : 1;
+	}
 
 	public static inline function getSeed():Int return seed;
 

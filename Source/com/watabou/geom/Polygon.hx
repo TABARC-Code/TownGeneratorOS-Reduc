@@ -55,6 +55,7 @@ abstract Polygon(Array<Point>) from Array<Point> to Array<Point> {
 	public var center(get,never) : Point;
 	public function get_center():Point {
 		var c = new Point();
+		if (this.length == 0) return c;
 		for (v in this)
 			c.addEq( v );
 		c.scaleEq( 1 / this.length );
@@ -63,6 +64,7 @@ abstract Polygon(Array<Point>) from Array<Point> to Array<Point> {
 
 	public var centroid(get,never) : Point;
 	public function get_centroid():Point {
+		if (this.length < 3) return center;
 		var x = 0.0;
 		var y = 0.0;
 		var a = 0.0;
@@ -72,12 +74,67 @@ abstract Polygon(Array<Point>) from Array<Point> to Array<Point> {
 			x += (v0.x + v1.x) * f;
 			y += (v0.y + v1.y) * f;
 		} );
+		if (Math.abs(a) < 0.000000001) return center;
 		var s6 = 1 / (3 * a);
 		return new Point( s6 * x, s6 * y );
 	}
 
+	// Vertex membership matters for shared edges. Use containsPoint for coordinates.
 	public inline function contains( v:Point ):Bool {
 		return this.indexOf( v ) != -1;
+	}
+
+	public function containsPoint(p:Point):Bool {
+		if (this.length < 3 || p == null) return false;
+		var inside = false;
+		var previous = this[this.length - 1];
+		for (current in this) {
+			var dx = current.x - previous.x;
+			var dy = current.y - previous.y;
+			var px = p.x - previous.x;
+			var py = p.y - previous.y;
+			var cross = dx * py - dy * px;
+			if (Math.abs(cross) <= 0.000001 * Math.max(1, Math.abs(dx) + Math.abs(dy))
+				&& px * dx + py * dy >= -0.000001
+				&& px * dx + py * dy <= dx * dx + dy * dy + 0.000001)
+				return true;
+			if ((current.y > p.y) != (previous.y > p.y)) {
+				var crossing = previous.x + (p.y - previous.y) * dx / dy;
+				if (p.x < crossing) inside = !inside;
+			}
+			previous = current;
+		}
+		return inside;
+	}
+
+
+	// Roads can pass through a plot without touching its original vertices.
+	public function intersectsSegment(a:Point, b:Point):Bool {
+		if (a == null || b == null || this.length < 3) return false;
+		if (containsPoint(a) || containsPoint(b)) return true;
+		var dx = b.x - a.x;
+		var dy = b.y - a.y;
+		var eps = 0.00000001;
+		for (i in 0...this.length) {
+			var c = this[i];
+			var d = this[(i + 1) % this.length];
+			var ex = d.x - c.x;
+			var ey = d.y - c.y;
+			var denominator = dx * ey - dy * ex;
+			var acx = c.x - a.x;
+			var acy = c.y - a.y;
+			if (Math.abs(denominator) <= eps) {
+				if (Math.abs(acx * dy - acy * dx) <= eps &&
+					Math.max(Math.min(a.x, b.x), Math.min(c.x, d.x)) <= Math.min(Math.max(a.x, b.x), Math.max(c.x, d.x)) + eps &&
+					Math.max(Math.min(a.y, b.y), Math.min(c.y, d.y)) <= Math.min(Math.max(a.y, b.y), Math.max(c.y, d.y)) + eps)
+					return true;
+			} else {
+				var t = (acx * ey - acy * ex) / denominator;
+				var u = (acx * dy - acy * dx) / denominator;
+				if (t >= -eps && t <= 1 + eps && u >= -eps && u <= 1 + eps) return true;
+			}
+		}
+		return false;
 	}
 
 	public function forEdge( f:Point->Point->Void ):Void {
@@ -158,7 +215,7 @@ abstract Polygon(Array<Point>) from Array<Point> to Array<Point> {
 		for (i in 1...this.length) {
 			var v1 = this[i];
 			var d1 = Point.distance( v1, p );
-			if (d1 < d) v0 = v1;
+			if (d1 < d) d = d1;
 		}
 		return d;
 	}

@@ -1,5 +1,7 @@
 package com.watabou.towngenerator.ui;
 
+import com.watabou.towngenerator.Main;
+
 import openfl.display.BitmapData;
 import openfl.display.Bitmap;
 import openfl.events.MouseEvent;

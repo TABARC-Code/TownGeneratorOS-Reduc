@@ -20,7 +20,7 @@ class CurtainWall {
 	private var patches	: Array<Patch>;
 
 	public function new( real:Bool, model:Model, patches:Array<Patch>, reserved:Array<Point> ) {
-		this.real = true;
+		this.real = real;
 		this.patches = patches;
 
 		if (patches.length == 1)

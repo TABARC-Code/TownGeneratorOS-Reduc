@@ -90,6 +90,7 @@ class ArrayExtender {
 
 	public static function replace<T>( a:Array<T>, el:T, newEls:Array<T> ) {
 		var index = a.indexOf( el );
+		if (index == -1 || newEls == null || newEls.length == 0) return;
 		a[index++] = newEls[0];
 		for (i in 1...newEls.length)
 			a.insert( index++, newEls[i] );

@@ -1,5 +1,8 @@
 package com.watabou.towngenerator.ui;
 
+import com.watabou.towngenerator.StateManager;
+import com.watabou.towngenerator.TownScene;
+
 import com.watabou.coogee.Game;
 import com.watabou.utils.Random;
 
@@ -17,12 +20,19 @@ class CitySizeButton extends Button {
 		click.add( onClick );
 	}
 
-	private function onClick():Void {
+	private function onClick( _ ):Void {
+		var previousSize = StateManager.size;
+		var previousSeed = StateManager.seed;
 		StateManager.size = size;
-		StateManager.seed = Random.getSeed();
+		try {
+			var town = new Model(size, -1);
+			StateManager.seed = town.seed;
+		} catch (e:Dynamic) {
+			StateManager.size = previousSize;
+			StateManager.seed = previousSeed;
+			throw e;
+		}
 		StateManager.pushParams();
-
-		new Model( size );
 		Game.switchScene( TownScene );
 	}
 }

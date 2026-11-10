@@ -11,9 +11,13 @@ class StateManager {
 
 	private static inline var SIZE = "size";
 	private static inline var SEED = "seed";
+	private static inline var CULTURE = "culture";
+	private static inline var ORIGIN = "origin";
 
 	public static var size	: Int = 15;
 	public static var seed	: Int = -1;
+	public static var culture	: String = "medieval";
+	public static var origin	: String = "town";
 
 	public static function pullParams() {
 		#if html5
@@ -24,6 +28,12 @@ class StateManager {
 
 			var seed1 = Std.parseInt( params.get( SEED ) );
 			if (seed1 != null) seed = (seed1 > 0 ? seed1 : -1);
+
+			var culture1 = params.get( CULTURE );
+			if (culture1 != null && culture1 != "") culture = culture1;
+
+			var origin1 = params.get( ORIGIN );
+			if (origin1 != null && origin1 != "") origin = origin1;
 		}
 		#end
 	}
@@ -36,11 +46,13 @@ class StateManager {
 
 		#if html5
 		var loc = Browser.location;
-		var search1 = loc.search;
-		var search2 = '?$SIZE=$size&$SEED=$seed';
-		// The next line is not entirely correct, it doesn't take into account hashes
-		var url = search1 != "" ? loc.href.split( search1 ).join( search2 ) : loc.href + search2;
-		Browser.window.history.replaceState( {size: size, seed: seed}, getStateName(), url );
+		var params = new URLSearchParams(loc.search);
+		params.set(SIZE, Std.string(size));
+		params.set(SEED, Std.string(seed));
+		params.set(CULTURE, culture);
+		params.set(ORIGIN, origin);
+		var url = loc.protocol + "//" + loc.host + loc.pathname + "?" + params.toString() + loc.hash;
+		Browser.window.history.replaceState({size: size, seed: seed, culture: culture, origin: origin}, getStateName(), url);
 		#end
 	}
 
@@ -54,7 +66,7 @@ class StateManager {
 		else if (size >= 24 && size < 40)
 			"Large City"
 		else if (size >= 40)
-			"Metropilis"
+			"Metropolis"
 		else
 			"Unknown state";
 	}
