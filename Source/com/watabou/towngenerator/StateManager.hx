@@ -51,7 +51,7 @@ class StateManager {
 		params.set(SEED, Std.string(seed));
 		params.set(CULTURE, culture);
 		params.set(ORIGIN, origin);
-		var url = loc.protocol + "//" + loc.host + loc.pathname + "?" + params.toString() + loc.hash;
+		var url = loc.protocol + "//" + loc.host + loc.pathname + "?" + Std.string(params) + loc.hash;
 		Browser.window.history.replaceState({size: size, seed: seed, culture: culture, origin: origin}, getStateName(), url);
 		#end
 	}
