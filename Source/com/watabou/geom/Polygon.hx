@@ -22,7 +22,8 @@ abstract Polygon(Array<Point>) from Array<Point> to Array<Point> {
 
 	public var square(get,never) : Float;
 	public function get_square():Float {
-		var v1 = last();
+		if (this.length < 3) return 0;
+		var v1 = this[this.length - 1];
 		var v2 = this[0];
 		var s = v1.x * v2.y - v2.x * v1.y;
 		for (i in 1...this.length) {

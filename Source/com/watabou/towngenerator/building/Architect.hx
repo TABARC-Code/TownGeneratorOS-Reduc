@@ -749,6 +749,7 @@ public static function makeMarket(poly:Polygon, culture:Culture, ?preferredAngle
             }
             return out;
     }
+    return out;
 }
 
 /**
@@ -756,19 +757,21 @@ public static function makeMarket(poly:Polygon, culture:Culture, ?preferredAngle
  * Returns building polygons and (optionally) a courtyard/yard marker polygon.
  */
 public static function makeMilitary(poly:Polygon, culture:Culture, ?preferredAngle:Null<Float>):Array<Polygon> {
+    var out:Array<Polygon> = [];
+    var c = poly.centroid;
     switch (culture) {
         case Culture.SAXON, Culture.VIKING, Culture.DARK_AGES, Culture.EUROPEAN_MEDIEVAL, Culture.HIGH_MEDIEVAL_CITY:
             var angle = preferredAngle;
             if (angle == null) angle = dominantAngle(poly);
 
             // Barracks compounds: a few longhouses aligned to angle, leaving a yard.
-            var out = makeLonghouses(poly, angle, 14 + Random.int(0, 6));
+            var barracks = makeLonghouses(poly, angle, 14 + Random.int(0, 6));
             // Add a small square parade ground marker
             var yard = Polygon.rect(5, 5);
             yard.rotate(angle);
             yard.offset(poly.centroid);
-            out.push(yard);
-            return out;
+            barracks.push(yard);
+            return barracks;
 
         case Culture.AFRICAN, Culture.TRIBAL, Culture.BARBARIAN:
             // Fortified compound: clustered huts plus a palisade ring marker.
@@ -869,6 +872,7 @@ public static function makeMilitary(poly:Polygon, culture:Culture, ?preferredAng
                 0.25
             );
     }
+    return out;
 }
 
 /**
