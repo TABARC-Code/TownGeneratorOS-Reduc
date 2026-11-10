@@ -19,8 +19,8 @@ jobs:
           haxe-version: '4.3.7'
       - name: Install libraries
         run: |
-          haxelib install lime 7.3.0 --always
-          haxelib install openfl 8.9.0 --always
+          haxelib install lime 8.2.2 --always
+          haxelib install openfl 9.4.1 --always
           haxelib install msignal 1.2.5 --always
       - name: Check source and regression cases
         run: sh scripts/run_checks.sh
